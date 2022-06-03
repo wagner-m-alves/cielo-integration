@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c61ff82cbf0142a401a48a8161e1595a",
+    "content-hash": "83c48311472259a25a0e0f0052754ccd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -121,6 +121,47 @@
                 }
             ],
             "time": "2021-08-15T20:50:18+00:00"
+        },
+        {
+            "name": "developercielo/api-3.0-php",
+            "version": "v1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DeveloperCielo/API-3.0-PHP.git",
+                "reference": "ad3f57731910f58f8baa6cb56e4f605baea38efa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DeveloperCielo/API-3.0-PHP/zipball/ad3f57731910f58f8baa6cb56e4f605baea38efa",
+                "reference": "ad3f57731910f58f8baa6cb56e4f605baea38efa",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.6",
+                "psr/log": "^1.1"
+            },
+            "suggest": {
+                "monolog/monolog": "Allows more advanced logging of the application flow"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Cielo": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Integração com a API 3.0 da Cielo",
+            "homepage": "https://github.com/DeveloperCielo/API-3.0-PHP",
+            "support": {
+                "issues": "https://github.com/DeveloperCielo/API-3.0-PHP/issues",
+                "source": "https://github.com/DeveloperCielo/API-3.0-PHP/tree/master"
+            },
+            "time": "2019-11-20T19:44:20+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
