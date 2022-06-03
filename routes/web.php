@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\CieloService;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test', function () {
+    return app(CieloService::class)->run('0c488395-d9e2-4a98-a599-252f8d528ba3', 'John Due', 15700);
 });
