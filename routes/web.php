@@ -19,5 +19,27 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-    return app(CieloService::class)->run('0c488395-d9e2-4a98-a599-252f8d528ba3', 'John Due', 15700);
+    $orderIdentifier = '0c488395-d9e2-4a98-a599-252f8d528ba3';
+    $client = [
+        'name'          => 'John Test',
+        'cpf'           => '00000000001',
+        'postal_code'   => '22750012',
+        'street'        => 'Av Marechal Camara',
+        'number'        => '123',
+        'district'      => 'Centro',
+        'city'          => 'Rio de Janeiro',
+        'state'         => 'RJ',
+        'country'       => 'BRA'
+    ];
+    $method = 'billet';
+    $amount = 15700;
+    $creditCard = [
+        'holder'    => 'Fulano de Tal',
+        'number'    => '0000000000000001',
+        'validity'  => '12/2018',
+        'cvv'       => '123',
+        'flag'      => 'visa'
+    ];
+
+    return app(CieloService::class)->generatePayment($orderIdentifier, $client, $method, $amount);
 });
