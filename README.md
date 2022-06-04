@@ -1,64 +1,41 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Cielo Integration
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esse projeto é uma implementação da API E-Commerce 3.0 da Cielo. Foi utilizado o framework Laravel 8 e o SDK para PHP dessa API.
 
-## About Laravel
+## Detalhes
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Foi utilizada a arquitetura de Serviços, visando uma maior organização e escalabilidade. Foi criado o arquivo de configuração app/config/payment.php para armazenar os dados da empresa que serão utilizados em cobranças via boleto bancário.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instruções de Instalação
+1. Acesse o diretório do projeto, após clona-lo ou baixa-lo.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. Instale as dependências do projeto, usando o comando abaixo:
+```
+composer install
+```
 
-## Learning Laravel
+3. Crie o arquivo .env, usando o comando abaixo:
+```
+cp .env.example .env
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. Gere a Chave do Sistema, usando o comando abaixo:
+```
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. Insira as variáveis CIELO_MERCHANT_ID e CIELO_MERCHANT_KEY no arquivo .env gerado no passo 3.
 
-## Laravel Sponsors
+6. Crie uma conta de testes no [Ambiente Sandbox](https://cadastrosandbox.cieloecommerce.cielo.com.br/) da Cielo.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+7. Salve as credencias geradas no passo 6, abra novamente o arquivo .env e insira os valores MERCHANT_ID e MERCHANT_KEY nas suas respectivas variáveis, criadas no passo 5.
 
-### Premium Partners
+## Instruções de Testes
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+1. Abra o arquivo de routes/web.php e altere a varável $method, linha 34, para mudar o método de pagamento. Use credit-card para gerar um pagamento via cartão de crédito ou billet para gerar uma cobrança via boleto bancário.
 
-## Contributing
+2. Acesse a rota /test em seu navegador. A resposta da requisição conterá links de consulta e url de visualização do boleto, caso esse seja o método escolhido.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Considerações Finais
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Há muitas funcionalidades contidas na SDK e na API que não foram implementadas, mas sinta-se a vontade para dar uma olhada na [Documentação Oficial da SDK](https://github.com/DeveloperCielo/API-3.0-PHP) e na [Documentação Oficial da API](https://developercielo.github.io/manual/cielo-ecommerce).
