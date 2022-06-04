@@ -32,7 +32,7 @@ Route::get('/test', function () {
         'country'       => 'BRA'
     ];
     $method = 'billet';
-    $amount = 15700;
+    $amount = 15700; // Valor em centavos. Ex: R$ 157,00 = 15700
     $creditCard = [
         'holder'    => 'Pessoa de Teste',
         'number'    => '0000000000000001',
