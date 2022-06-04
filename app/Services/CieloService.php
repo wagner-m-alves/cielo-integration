@@ -3,12 +3,16 @@
 namespace App\Services;
 
 use Cielo\API30\Merchant;
-use Cielo\API30\Ecommerce\Environment;
-use Cielo\API30\Ecommerce\Sale;
-use Cielo\API30\Ecommerce\CieloEcommerce;
-use Cielo\API30\Ecommerce\Payment;
-use Cielo\API30\Ecommerce\CreditCard;
+use Cielo\API30\Ecommerce\{
+    Environment,
+    Sale,
+    CieloEcommerce,
+    Payment,
+    CreditCard,
+    RecurrentPayment,
+};
 use Cielo\API30\Ecommerce\Request\CieloRequestException;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class CieloService
@@ -38,17 +42,12 @@ class CieloService
         return new CieloEcommerce($merchant, $environment);
     }
 
-    private function cancelSale($paymentId)
-    {
-        return $this->cielo->cancelSale($paymentId, 15700);
-    }
-
     private function sale(string $orderIdentifier, array $customerData)
     {
         $sale = new Sale($orderIdentifier);
 
         $sale->customer($customerData['name'])
-                    ->setIdentityType('CPF')
+                    ->setIdentityType('CPF') // Mude para CNPJ, caso seja Pessoa Jurídica
                     ->setIdentity($customerData['cpf'])
                     ->address()
                         ->setZipCode($customerData['postal_code'])
@@ -88,49 +87,33 @@ class CieloService
                 ->setHolder($creditCardData['holder']);
     }
 
-    private function setBilletData(string $customerAddress, int $id)
-    {
-        return [
-            'address'                   => $customerAddress,
-            'number'                    => now()->format('ymd') . strval($id),
-            'assignor'                  => 'Cyberage Technologies',
-            'demonstrative'             => 'Texto Demonstrativo',
-            'assignorIdentification'    => '14159741000154',
-            'instructions'              => 'Não receber após o vencimento.',
-        ];
-    }
-
-    private function billet(Sale $sale, $amount, array $billetData)
+    private function billet(Sale $sale, $amount, string $customerAddress, int $id)
     {
         $sale->payment($amount)
                 ->setType(Payment::PAYMENTTYPE_BOLETO)
-                ->setAddress($billetData['address'])
-                ->setBoletoNumber($billetData['number'])
-                ->setAssignor($billetData['assignor'])
-                ->setDemonstrative($billetData['demonstrative'])
+                ->setAddress($customerAddress)
+                ->setBoletoNumber(now()->format('ymd') . strval($id))
+                ->setAssignor(config('payment.billet.assignor'))
+                ->setDemonstrative(config('payment.billet.demonstrative'))
                 ->setExpirationDate(date('d/m/Y', strtotime('+1 month')))
-                ->setIdentification($billetData['assignorIdentification'])
-                ->setInstructions($billetData['instructions']);
+                ->setIdentification(config('payment.billet.assignorIdentification'))
+                ->setInstructions(config('payment.billet.instructions'));
     }
 
-    public function generatePayment(string $orderIdentifier, array $customerData, string $method, $amount, array $creditCardData = [])
+    public function generatePayment(string $orderIdentifier, array $customerData, string $method, $amount, array $creditCardData = [], bool $recurrent = false, string $interval = 'monthly')
     {
         try
         {
-            $sale       = $this->sale($orderIdentifier, $customerData);
-            $response   = null;
+            $sale               = $this->sale($orderIdentifier, $customerData);
+            $customerAddress    = $customerData['street'] . ', ' . $customerData['number'] . ' - ' . $customerData['district'] . ' - ' . $customerData['city'] . '/' . $customerData['state'];
+            $response           = null;
 
-            if($method == 'credit-card')
-            {
-                $this->creditCard($sale, $amount, $creditCardData);
-            }
+            if($method == 'credit-card' && !is_null($creditCardData))
+                $this->creditCard($sale, $amount, $creditCardData, $recurrent, $interval);
+            elseif($method == 'billet')
+                $this->billet($sale, $amount, $customerAddress, rand(1,1000));
             else
-            {
-                $customerAddress    = $customerData['street'] . ', ' . $customerData['number'] . ' - ' . $customerData['district'] . ' - ' . $customerData['city'] . '/' . $customerData['state'];
-                $data               = $this->setBilletData($customerAddress, rand(1,1000));
-
-                $this->billet($sale, $amount, $data);
-            }
+                return;
 
             $response = $this->cielo->createSale($sale);
 
@@ -144,6 +127,30 @@ class CieloService
         catch (CieloRequestException $e)
         {
             log::error($e);
+            return;
+        }
+        catch (Exception $e)
+        {
+            log::error($e);
+            return;
+        }
+    }
+
+    public function cancel($paymentId, $amount)
+    {
+        try
+        {
+            return $this->cielo->cancelSale($paymentId, $amount);
+        }
+        catch (CieloRequestException $e)
+        {
+            log::error($e);
+            return;
+        }
+        catch (Exception $e)
+        {
+            log::error($e);
+            return;
         }
     }
 }
